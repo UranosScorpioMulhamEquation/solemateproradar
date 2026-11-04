@@ -32,13 +32,13 @@ if not st.session_state['master_auth']:
 st.markdown("<h1 style='text-align: center;'>🪐 مولد روابط التفعيل وشهادات الزبائن</h1>", unsafe_allow_html=True)
 st.markdown("---")
 
-st.write("أدخل بيانات الزبون أدناه لتوليد رابط التفعيل المباشر الخاص به واستخراج وثيقة الترخيص:")
+st.write("أدخل بيانات الزبون أدناه لتوليد البيانات (رقم الهاتف، الرقم السري، والرابط) واستخراج وثيقة الترخيص:")
 
 # مدخلات بيانات الزبون
 customer_name = st.text_input("👤 اسم الزبون الكريم:")
 customer_phone = st.text_input("📱 رقم الهاتف بصيغة الدولة (مثال: 00971501234567):", placeholder="00971...")
 
-if st.button("⚡ توليد رابط التفعيل ووثيقة الترخيص"):
+if st.button("⚡ توليد الترخيص والبيانات"):
     if customer_phone and customer_name:
         # تطبيق المعادلة الرياضية المخصصة لتوليد المفتاح سراً
         digits = ''.join(filter(str.isdigit, customer_phone))
@@ -53,15 +53,18 @@ if st.button("⚡ توليد رابط التفعيل ووثيقة الترخيص
             base_app_url = "https://full-astro-forecast-radar.streamlit.app/"
             direct_link = f"{base_app_url}?phone={customer_phone}&key={activation_key}"
 
-            st.success("تم توليد الرابط المباشر بنجاح!")
+            st.success("تم توليد بيانات الترخيص بنجاح!")
             
-            # عرض الرابط بشكل بارز ومريح للنسخ
-            st.markdown("### 🔗 رابط التفعيل الخاص بالزبون (انسخه وأرسله له):")
+            # عرض النتائج في التطبيق بالترتيب المطلوب: رقم الهاتف -> الرقم السري -> الرابط
+            st.markdown("### 📋 ملخص بيانات الترخيص:")
+            st.info(f"📱 **رقم الهاتف:** `{customer_phone}`")
+            st.warning(f"🔑 **الرقم السري (مفتاح التفعيل):** `{activation_key}`")
+            st.markdown(f"🔗 **رابط التفعيل المباشر:**")
             st.code(direct_link, language="text")
             
             st.markdown("---")
             
-            # تصميم صفحة HTML احترافية للترخيص تتضمن الرابط المباشر وتكون جاهزة للـ PDF
+            # تصميم صفحة HTML احترافية للترخيص بالترتيب المطلوب ومعالجة مشاكل الرابط في الـ PDF
             html_content = f"""
             <!DOCTYPE html>
             <html lang="ar" dir="rtl">
@@ -103,25 +106,47 @@ if st.button("⚡ توليد رابط التفعيل ووثيقة الترخيص
                         margin: 15px 0;
                         color: #333;
                     }}
-                    .link-display {{
+                    .data-box {{
                         background: #f8fafc;
-                        border: 2px dashed #6D28D9;
-                        padding: 15px;
+                        border: 2px solid #e2e8f0;
+                        padding: 20px;
                         border-radius: 12px;
-                        text-align: center;
-                        font-size: 14px;
-                        word-break: break-all;
-                        font-weight: bold;
-                        color: #1e3a8a;
                         margin: 20px 0;
                     }}
-                    .instructions {{
+                    .data-row {{
+                        font-size: 16px;
+                        margin: 14px 0;
+                        color: #1e293b;
+                    }}
+                    .data-row strong {{
+                        color: #1e3a8a;
+                    }}
+                    .link-container {{
                         background: #eff6ff;
+                        border: 2px dashed #6D28D9;
+                        padding: 15px;
+                        border-radius: 10px;
+                        margin-top: 8px;
+                        word-break: break-all;
+                        overflow-wrap: break-word;
+                    }}
+                    .link-container a {{
+                        color: #1d4ed8;
+                        text-decoration: underline;
+                        font-weight: bold;
+                        font-size: 15px;
+                        word-break: break-all;
+                        overflow-wrap: break-word;
+                    }}
+                    .instructions {{
+                        background: #f0fdf4;
+                        border-right: 4px solid #22c55e;
                         padding: 15px;
                         border-radius: 8px;
                         font-size: 14px;
-                        color: #1e40af;
+                        color: #166534;
                         line-height: 1.6;
+                        margin-top: 20px;
                     }}
                     .footer {{
                         text-align: center;
@@ -140,16 +165,21 @@ if st.button("⚡ توليد رابط التفعيل ووثيقة الترخيص
                     <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
                     
                     <div class="info-group"><strong>اسم المستفيد (الزبون):</strong> {customer_name}</div>
-                    <div class="info-group"><strong>رقم الهاتف المعتمد:</strong> {customer_phone}</div>
                     
-                    <p style="margin-top: 20px; font-size: 16px;">إليك رابطك الخاص والمفعل مسبقاً للعمل بسلاسة تامة لمدة 5 سنوات:</p>
-                    
-                    <div class="link-display">{direct_link}</div>
+                    <div class="data-box">
+                        <!-- الترتيب المطلوب: رقم الهاتف ثم الرقم السري ثم الرابط -->
+                        <div class="data-row">📱 <strong>رقم الهاتف:</strong> {customer_phone}</div>
+                        <div class="data-row">🔑 <strong>الرقم السري (مفتاح التفعيل):</strong> <span style="color: #6D28D9; font-weight: bold; letter-spacing: 2px;">{activation_key}</span></div>
+                        <div class="data-row" style="margin-top: 15px;">🔗 <strong>رابط التفعيل المباشر:</strong></div>
+                        <div class="link-container">
+                            <a href="{direct_link}" target="_blank">{direct_link}</a>
+                        </div>
+                    </div>
                     
                     <div class="instructions">
                         <strong>📌 تعليمات التشغيل للزبون:</strong><br>
                         1. قم بالنقر مباشرة على الرابط أعلاه من هاتفك أو جهازك.<br>
-                        2. سيفتح التطبيق مفعلاً بشكل فوري ودون الحاجة لإدخال أي كلمات مرور.<br>
+                        2. سيفتح التطبيق مفعلاً بشكل فوري ودون الحاجة لإدخال أي كلمات مرور لمدة 5 سنوات.<br>
                         3. احفظ هذا الرابط في متصفحك أو ضعه كاختصار على شاشة هاتفك الرئيسية للرجوع إليه دائماً.
                     </div>
                     
@@ -163,7 +193,7 @@ if st.button("⚡ توليد رابط التفعيل ووثيقة الترخيص
 
             # معاينة الشهادة داخل التطبيق
             st.markdown("### 📄 معاينة وثيقة الترخيص الرسمية:")
-            st.components.v1.html(html_content, height=550, scrolling=True)
+            st.components.v1.html(html_content, height=600, scrolling=True)
 
             # زر تحميل ملف HTML (لفتحه وضغط Ctrl+P ثم الحفظ كـ PDF وإرساله للزبون)
             b64 = base64.b64encode(html_content.encode('utf-8')).decode("utf-8")
