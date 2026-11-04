@@ -3,7 +3,7 @@ import base64
 
 # إعدادات الصفحة
 st.set_page_config(
-    page_title="مولد مفاتيح تراخيص الزبائن - استرو رادار",
+    page_title="مولد روابط تراخيص الزبائن - استرو رادار",
     page_icon="🔑",
     layout="centered"
 )
@@ -29,18 +29,18 @@ if not st.session_state['master_auth']:
 # ==========================================================
 # 🛠️ لوحة التحكم بعد نجاح الدخول بكلمة المرور "1981"
 # ==========================================================
-st.markdown("<h1 style='text-align: center;'>🪐 مولد مفاتيح التوريد وشهادات الزبائن</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>🪐 مولد روابط التفعيل وشهادات الزبائن</h1>", unsafe_allow_html=True)
 st.markdown("---")
 
-st.write("أدخل بيانات الزبون أدناه لتوليد مفتاح التفعيل الخاص به واستخراج وثيقة الترخيص:")
+st.write("أدخل بيانات الزبون أدناه لتوليد رابط التفعيل المباشر الخاص به واستخراج وثيقة الترخيص:")
 
 # مدخلات بيانات الزبون
 customer_name = st.text_input("👤 اسم الزبون الكريم:")
 customer_phone = st.text_input("📱 رقم الهاتف بصيغة الدولة (مثال: 00971501234567):", placeholder="00971...")
 
-if st.button("⚡ توليد مفتاح التفعيل ووثيقة الترخيص"):
+if st.button("⚡ توليد رابط التفعيل ووثيقة الترخيص"):
     if customer_phone and customer_name:
-        # تطبيق المعادلة الرياضية المخصصة
+        # تطبيق المعادلة الرياضية المخصصة لتوليد المفتاح سراً
         digits = ''.join(filter(str.isdigit, customer_phone))
         
         if len(digits) < 8:
@@ -49,18 +49,19 @@ if st.button("⚡ توليد مفتاح التفعيل ووثيقة الترخي
             num = int(digits[:8])
             activation_key = str(round(abs(num / 2 * 3.14)))[:6]
 
-            st.success("تم توليد المفتاح بنجاح!")
+            # بناء رابط التفعيل الذكي والمباشر للزبون
+            base_app_url = "https://full-astro-forecast-radar.streamlit.app/"
+            direct_link = f"{base_app_url}?phone={customer_phone}&key={activation_key}"
+
+            st.success("تم توليد الرابط المباشر بنجاح!")
             
-            # عرض النتيجة بشكل بارز
-            col1, col2 = st.columns(2)
-            with col1:
-                st.metric(label="رقم الهاتف المعرّف", value=customer_phone)
-            with col2:
-                st.metric(label="مفتاح التفعيل (نسخه للزبون)", value=activation_key)
+            # عرض الرابط بشكل بارز ومريح للنسخ
+            st.markdown("### 🔗 رابط التفعيل الخاص بالزبون (انسخه وأرسله له):")
+            st.code(direct_link, language="text")
             
             st.markdown("---")
             
-            # تصميم صفحة HTML احترافية للترخيص قابلة للتحويل لـ PDF
+            # تصميم صفحة HTML احترافية للترخيص تتضمن الرابط المباشر وتكون جاهزة للـ PDF
             html_content = f"""
             <!DOCTYPE html>
             <html lang="ar" dir="rtl">
@@ -102,17 +103,17 @@ if st.button("⚡ توليد مفتاح التفعيل ووثيقة الترخي
                         margin: 15px 0;
                         color: #333;
                     }}
-                    .key-display {{
+                    .link-display {{
                         background: #f8fafc;
                         border: 2px dashed #6D28D9;
-                        padding: 20px;
+                        padding: 15px;
                         border-radius: 12px;
                         text-align: center;
-                        font-size: 32px;
+                        font-size: 14px;
+                        word-break: break-all;
                         font-weight: bold;
-                        color: #6D28D9;
-                        letter-spacing: 5px;
-                        margin: 25px 0;
+                        color: #1e3a8a;
+                        margin: 20px 0;
                     }}
                     .instructions {{
                         background: #eff6ff;
@@ -141,15 +142,15 @@ if st.button("⚡ توليد مفتاح التفعيل ووثيقة الترخي
                     <div class="info-group"><strong>اسم المستفيد (الزبون):</strong> {customer_name}</div>
                     <div class="info-group"><strong>رقم الهاتف المعتمد:</strong> {customer_phone}</div>
                     
-                    <p style="margin-top: 25px; font-size: 16px;">تم إصدار مفتاح التفعيل الخاص بك لضمان تشغيل المنظومة بكفاءة تامة لمدة 5 سنوات:</p>
+                    <p style="margin-top: 20px; font-size: 16px;">إليك رابطك الخاص والمفعل مسبقاً للعمل بسلاسة تامة لمدة 5 سنوات:</p>
                     
-                    <div class="key-display">{activation_key}</div>
+                    <div class="link-display">{direct_link}</div>
                     
                     <div class="instructions">
                         <strong>📌 تعليمات التشغيل للزبون:</strong><br>
-                        1. افتح رابط المنظومة الفلكية على هاتفك.<br>
-                        2. عند ظهور شاشة التفعيل لأول مرة، أدخل رقم هاتفك الأعلى <b>{customer_phone}</b> ومفتاح التفعيل الموضح أعلاه.<br>
-                        3. يتم حفظ التفعيل في متصفح هاتفك تلقائياً لمدة 5 سنوات كاملة.
+                        1. قم بالنقر مباشرة على الرابط أعلاه من هاتفك أو جهازك.<br>
+                        2. سيفتح التطبيق مفعلاً بشكل فوري ودون الحاجة لإدخال أي كلمات مرور.<br>
+                        3. احفظ هذا الرابط في متصفحك أو ضعه كاختصار على شاشة هاتفك الرئيسية للرجوع إليه دائماً.
                     </div>
                     
                     <div class="footer">
@@ -162,15 +163,15 @@ if st.button("⚡ توليد مفتاح التفعيل ووثيقة الترخي
 
             # معاينة الشهادة داخل التطبيق
             st.markdown("### 📄 معاينة وثيقة الترخيص الرسمية:")
-            st.components.v1.html(html_content, height=520, scrolling=True)
+            st.components.v1.html(html_content, height=550, scrolling=True)
 
-            # زر تحميل ملف HTML (والذي يمكن فتحه بالمتصفح وضغط Ctrl+P ثم الحفظ كـ PDF بإذن الله)
+            # زر تحميل ملف HTML (لفتحه وضغط Ctrl+P ثم الحفظ كـ PDF وإرساله للزبون)
             b64 = base64.b64encode(html_content.encode('utf-8')).decode("utf-8")
             href = f'''
             <div style="text-align: center; margin-top: 20px;">
                 <a href="data:text/html;base64,{b64}" download="License_Certificate_{customer_name}.html" 
                    style="display: inline-block; padding: 12px 25px; background-color: #6D28D9; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
-                   📥 تحميل وثيقة الترخيص (HTML جاهزة للطباعة أو التحويل لـ PDF)
+                   📥 تحميل وثيقة الترخيص بصيغة HTML (جاهزة للطباعة أو الحفظ كـ PDF)
                 </a>
             </div>
             '''
