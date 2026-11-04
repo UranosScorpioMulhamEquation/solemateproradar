@@ -4,7 +4,7 @@ from supabase import create_client, Client
 
 # إعدادات الصفحة
 st.set_page_config(
-    page_title="مولد روابط تراخيص الزبائن - استرو رادار",
+    page_title="مولد بيانات تراخيص الزبائن - استرو رادار",
     page_icon="🔑",
     layout="centered"
 )
@@ -54,7 +54,7 @@ if not st.session_state['master_auth']:
 # ==========================================================
 # 🛠️ لوحة التحكم بعد نجاح الدخول بكلمة المرور "1981"
 # ==========================================================
-st.markdown("<h1 style='text-align: center;'>🪐 مولد روابط التفعيل وشهادات الزبائن</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>🪐 مولد بيانات التفعيل وشهادات الزبائن</h1>", unsafe_allow_html=True)
 st.markdown("---")
 
 st.write("أدخل بيانات الزبون أدناه لتوليد البيانات تلقائياً، إضافتها لقاعدة Supabase، واستخراج وثيقة الترخيص:")
@@ -79,24 +79,18 @@ if st.button("⚡ توليد الترخيص وحفظه سحابياً"):
 
             if db_result is True or db_result == "exists":
                 if db_result == "exists":
-                    st.warning("⚠️ رقم الهاتف موجود مسبقاً في قاعدة البيانات، وتم عرض رابط الترخيص الخاص به.")
+                    st.warning("⚠️ رقم الهاتف موجود مسبقاً في قاعدة البيانات، وتم عرض بيانات الترخيص الخاصة به.")
                 else:
                     st.success("✨ تم حفظ بيانات الزبون في قاعدة البيانات السحابية (Supabase) بنجاح!")
 
-                # بناء رابط التفعيل الذكي والمباشر للزبون
-                base_app_url = "https://full-astro-forecast-radar.streamlit.app/"
-                direct_link = f"{base_app_url}?phone={customer_phone}&key={activation_key}"
-                
-                # عرض النتائج في التطبيق بالترتيب: رقم الهاتف -> الرقم السري -> الرابط
+                # عرض النتائج في التطبيق بالترتيب: رقم الهاتف -> الرقم السري (بدون روابط)
                 st.markdown("### 📋 ملخص بيانات الترخيص:")
                 st.info(f"📱 **رقم الهاتف:** `{customer_phone}`")
                 st.warning(f"🔑 **الرقم السري (مفتاح التفعيل):** `{activation_key}`")
-                st.markdown(f"🔗 **رابط التفعيل المباشر:**")
-                st.code(direct_link, language="text")
                 
                 st.markdown("---")
                 
-                # تصميم صفحة HTML للترخيص مع حماية الرابط عند التصدير لـ PDF
+                # تصميم صفحة HTML للترخيص (خالية من الروابط تماماً)
                 html_content = f"""
                 <!DOCTYPE html>
                 <html lang="ar" dir="rtl">
@@ -146,36 +140,19 @@ if st.button("⚡ توليد الترخيص وحفظه سحابياً"):
                             margin: 20px 0;
                         }}
                         .data-row {{
-                            font-size: 16px;
-                            margin: 14px 0;
+                            font-size: 18px;
+                            margin: 16px 0;
                             color: #1e293b;
                         }}
                         .data-row strong {{
                             color: #1e3a8a;
-                        }}
-                        .link-container {{
-                            background: #eff6ff;
-                            border: 2px dashed #6D28D9;
-                            padding: 15px;
-                            border-radius: 10px;
-                            margin-top: 8px;
-                            word-break: break-all;
-                            overflow-wrap: break-word;
-                        }}
-                        .link-container a {{
-                            color: #1d4ed8;
-                            text-decoration: underline;
-                            font-weight: bold;
-                            font-size: 15px;
-                            word-break: break-all;
-                            overflow-wrap: break-word;
                         }}
                         .instructions {{
                             background: #f0fdf4;
                             border-right: 4px solid #22c55e;
                             padding: 15px;
                             border-radius: 8px;
-                            font-size: 14px;
+                            font-size: 15px;
                             color: #166534;
                             line-height: 1.6;
                             margin-top: 20px;
@@ -200,18 +177,14 @@ if st.button("⚡ توليد الترخيص وحفظه سحابياً"):
                         
                         <div class="data-box">
                             <div class="data-row">📱 <strong>رقم الهاتف:</strong> {customer_phone}</div>
-                            <div class="data-row">🔑 <strong>الرقم السري (مفتاح التفعيل):</strong> <span style="color: #6D28D9; font-weight: bold; letter-spacing: 2px;">{activation_key}</span></div>
-                            <div class="data-row" style="margin-top: 15px;">🔗 <strong>رابط التفعيل المباشر:</strong></div>
-                            <div class="link-container">
-                                <a href="{direct_link}" target="_blank">{direct_link}</a>
-                            </div>
+                            <div class="data-row" style="margin-top: 15px;">🔑 <strong>الرقم السري (مفتاح التفعيل):</strong> <span style="color: #6D28D9; font-weight: bold; letter-spacing: 2px;">{activation_key}</span></div>
                         </div>
                         
                         <div class="instructions">
                             <strong>📌 تعليمات التشغيل للزبون:</strong><br>
-                            1. قم بالنقر مباشرة على الرابط أعلاه من هاتفك أو جهازك.<br>
-                            2. سيفتح التطبيق مفعلاً بشكل فوري ودون الحاجة لإدخال أي كلمات مرور لمدة 5 سنوات.<br>
-                            3. احفظ هذا الرابط في متصفحك أو ضعه كاختصار على شاشة هاتفك الرئيسية للرجوع إليه دائماً.
+                            1. قم بفتح التطبيق الأساسي للمنظومة الفلكية.<br>
+                            2. أدخل رقم هاتفك والرقم السري الموضح أعلاه في شاشة التفعيل لمرة واحدة فقط.<br>
+                            3. سيتم قفل الترخيص على جهازك وتفتح المنظومة بكامل ميزاتها بشكل دائم.
                         </div>
                         
                         <div class="footer">
@@ -224,7 +197,7 @@ if st.button("⚡ توليد الترخيص وحفظه سحابياً"):
 
                 # معاينة الشهادة
                 st.markdown("### 📄 معاينة وثيقة الترخيص الرسمية:")
-                st.components.v1.html(html_content, height=600, scrolling=True)
+                st.components.v1.html(html_content, height=550, scrolling=True)
 
                 # زر تحميل الشهادة
                 b64 = base64.b64encode(html_content.encode('utf-8')).decode("utf-8")
@@ -232,7 +205,7 @@ if st.button("⚡ توليد الترخيص وحفظه سحابياً"):
                 <div style="text-align: center; margin-top: 20px;">
                     <a href="data:text/html;base64,{b64}" download="License_Certificate_{customer_name}.html" 
                        style="display: inline-block; padding: 12px 25px; background-color: #6D28D9; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
-                       📥 تحميل وثيقة الترخيص بصيغة HTML (جاهزة للطباعة أو الحفظ كـ PDF)
+                        📥 تحميل وثيقة الترخيص بصيغة HTML (جاهزة للطباعة أو الحفظ كـ PDF)
                     </a>
                 </div>
                 '''
