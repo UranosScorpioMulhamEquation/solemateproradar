@@ -61,7 +61,7 @@ st.write("أدخل بيانات الزبون أدناه لتوليد البيا�
 
 # مدخلات بيانات الزبون
 customer_name = st.text_input("👤 اسم الزبون الكريم:")
-customer_phone = st.text_input("📱 رقم الهاتف (مثال: 12345685451):", placeholder="00971...")
+customer_phone = st.text_input("📱 رقم الهاتف (مثال: 12345685451):", placeholder="123456789...")
 
 if st.button("⚡ توليد الترخيص وحفظه سحابياً"):
     if customer_phone and customer_name:
