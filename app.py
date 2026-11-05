@@ -22,7 +22,7 @@ def add_customer_to_supabase(phone, key):
         if len(response.data) > 0:
             return "exists"
         
-        # إضافة الزبون الجديد بصف جديد
+        # إضافة الزبون الجديد بصف جديد مع ترك device_id فارغاً لكي يُسجل تلقائياً عبر الـ IP أول دخول
         supabase.table("licenses").insert({
             "phone": str(phone),
             "key": str(key),
@@ -65,13 +65,13 @@ customer_phone = st.text_input("📱 رقم الهاتف بصيغة الدولة
 
 if st.button("⚡ توليد الترخيص وحفظه سحابياً"):
     if customer_phone and customer_name:
-        # تطبيق المعادلة الرياضية المخصصة
+        # استخراج الأرقام فقط وتطبيق المعادلة على الرقم كاملاً (بدون شرط الـ 8 أرقام)
         digits = ''.join(filter(str.isdigit, customer_phone))
         
-        if len(digits) < 8:
-            st.error("⚠️ رقم الهاتف المدخل قصير جداً، يجب أن يحتوي على أرقام كافية لتطبيق المعادلة.")
+        if not digits:
+            st.error("⚠️ الرجاء إدخال رقم هاتف صحيح يحتوي على أرقام.")
         else:
-            num = int(digits[:8])
+            num = int(digits)
             activation_key = str(round(abs(num / 2 * 3.14)))[:6]
 
             # حفظ البيانات سحابياً في Supabase
@@ -184,7 +184,7 @@ if st.button("⚡ توليد الترخيص وحفظه سحابياً"):
                             <strong>📌 تعليمات التشغيل للزبون:</strong><br>
                             1. قم بفتح التطبيق الأساسي للمنظومة الفلكية.<br>
                             2. أدخل رقم هاتفك والرقم السري الموضح أعلاه في شاشة التفعيل لمرة واحدة فقط.<br>
-                            3. سيتم قفل الترخيص على جهازك وتفتح المنظومة بكامل ميزاتها بشكل دائم.
+                            3. سيتم قفل الترخيص تلقائياً على جهازك وشبكتك وتفتح المنظومة بكامل ميزاتها بشكل دائم.
                         </div>
                         
                         <div class="footer">
